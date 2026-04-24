@@ -1,4 +1,8 @@
 # .rubocop.yml
+
+plugins:
+  - rubocop-performance
+  - rubocop-rake
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2
@@ -6,6 +10,7 @@ AllCops:
   Exclude:
     - 'bin/console'
     - '*.gemspec'
+    - 'vendor/**/*'
 
 Layout/LineLength:
   Max: 120
