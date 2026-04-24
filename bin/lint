@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/lint
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+exec bundle exec rubocop "$@"
