@@ -1,7 +1,6 @@
 # lib/abbu/archive.rb
 # frozen_string_literal: true
 
-require 'pathname'
 require_relative 'parsers/sqlite_parser'
 require_relative 'parsers/plist_parser'
 
