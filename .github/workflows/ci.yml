@@ -23,7 +23,7 @@ jobs:
         run: bundle install
 
       - name: Run RuboCop
-        if: ${{ matrix.ruby-version == '4.0' }}
+        if: ${{ matrix.ruby-version == '3.2' }}
         run: bundle exec rubocop
 
       - name: Run RSpec
