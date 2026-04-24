@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name        = "abbu"
   spec.version     = Abbu::VERSION
   spec.authors     = ["Stan Carver II"]
-  spec.email       = ["stan@stancarver.com"]
+  spec.email       = ["stan@a1webconsulting.com"]
 
   spec.summary     = "Read and process Apple Contacts .abbu archives in Ruby."
   spec.description = "Parse Apple Address Book Archive (.abbu) files and export contacts to CSV, JSON, or vCard. " \
@@ -23,14 +23,14 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
 
   spec.files = Dir[
-    "lib/**/*.rb",
     "bin/*",
     "docs/**/*",
     "examples/**/*.rb",
+    "lib/**/*.rb",
     "tasks/**/*.rake",
+    "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "CHANGELOG.md"
+    "README.md"
   ]
 
   spec.bindir        = "bin"

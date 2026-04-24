@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby-version: ["3.2", "3.3", "3.4.9", "4.0.3"]
+        ruby-version: ["3.2", "3.3", "3.4", "4.0"]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,6 +23,7 @@ jobs:
         run: bundle install
 
       - name: Run RuboCop
+        if: ${{ matrix.ruby-version == '4.0' }}
         run: bundle exec rubocop
 
       - name: Run RSpec
