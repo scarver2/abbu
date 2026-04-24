@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/cleanse
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+exec bundle exec rubocop -A "$@"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/outdated
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+exec bundle outdated "$@"

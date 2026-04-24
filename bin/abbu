@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+# bin/abbu
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+
+require 'optparse'
+require 'abbu'
+
+options = {
+  format: nil,
+  output: nil,
+  dedupe: false,
+  stats: false
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: abbu <file.abbu> [options]'
+
+  opts.on('-f', '--format FORMAT', %w[csv json vcard], 'Export format (csv, json, vcard)') do |f|
+    options[:format] = f
+  end
+
+  opts.on('-o', '--output FILE', 'Output file (default: stdout)') do |o|
+    options[:output] = o
+  end
+
+  opts.on('--stats', 'Print contact statistics') do
+    options[:stats] = true
+  end
+
+  opts.on('--dedupe', 'Find and print duplicate contacts') do
+    options[:dedupe] = true
+  end
+
+  opts.on('-v', '--version', 'Print version') do
+    puts "abbu #{Abbu::VERSION}"
+    exit
+  end
+
+  opts.on('-h', '--help', 'Print this help') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+file = ARGV.shift
+
+if file.nil?
+  puts parser
+  exit 1
+end
+
+archive = Abbu.open(file)
+
+if options[:stats]
+  contacts = archive.contacts
+  puts "Total contacts : #{contacts.count}"
+  puts "With email     : #{contacts.count { |c| c.emails.any? }}"
+  puts "With phone     : #{contacts.count { |c| c.phones.any? }}"
+  exit
+end
+
+if options[:dedupe]
+  require 'abbu/utils/deduplicator'
+  dupes = Abbu::Utils::Deduplicator.new(archive.contacts).duplicates
+  if dupes.empty?
+    puts 'No duplicates found.'
+  else
+    dupes.each do |email, contacts|
+      puts "Duplicate: #{email}"
+      contacts.each { |c| puts "  - #{c.full_name}" }
+    end
+  end
+  exit
+end
+
+case options[:format]
+when 'csv'
+  exporter = Abbu::Exporters::CsvExporter.new(archive.contacts)
+  options[:output] ? exporter.to_file(options[:output]) : exporter.to_stdout
+when 'json'
+  exporter = Abbu::Exporters::JsonExporter.new(archive.contacts)
+  options[:output] ? exporter.to_file(options[:output]) : exporter.to_stdout
+when 'vcard'
+  exporter = Abbu::Exporters::VcardExporter.new(archive.contacts)
+  options[:output] ? exporter.to_file(options[:output]) : exporter.to_stdout
+else
+  puts parser
+  exit 1
+end
