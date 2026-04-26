@@ -9,9 +9,11 @@ RSpec.describe Abbu::Exporters::CsvExporter do
     c = Abbu::Contact.new
     c.first_name = 'Stan'
     c.last_name  = 'Carver'
-    c.emails     = ['stan@example.com']
-    c.phones     = ['555-1234']
+    c.emails     = [{ address: 'stan@example.com', label: 'Work' }]
+    c.phones     = [{ number: '555-1234', label: 'Work' }]
     c.company    = 'Acme'
+    c.addresses  = [{ street: '123 Main', city: 'Dallas', state: 'TX', zip: '75001', country: 'USA' }]
+    c.groups     = ['Friends']
     c
   end
 
@@ -23,8 +25,8 @@ RSpec.describe Abbu::Exporters::CsvExporter do
         path = File.join(dir, 'out.csv')
         exporter.to_file(path)
         rows = CSV.read(path)
-        expect(rows.first).to eq(%w[Name Email Phone Company])
-        expect(rows[1]).to eq(['Stan Carver', 'stan@example.com', '555-1234', 'Acme'])
+        expect(rows.first).to eq(%w[Name Email Phone Company Address Groups])
+        expect(rows[1]).to eq(['Stan Carver', 'stan@example.com', '555-1234', 'Acme', '123 Main, Dallas, TX, 75001, USA', 'Friends'])
       end
     end
   end

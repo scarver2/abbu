@@ -30,6 +30,9 @@ module FixtureGenerator
         Z_ENT INTEGER,
         ZFIRSTNAME TEXT,
         ZLASTNAME TEXT,
+        ZNICKNAME TEXT,
+        ZTITLE TEXT,
+        ZSUFFIX TEXT,
         ZORGANIZATION TEXT
       )
     SQL
@@ -75,7 +78,7 @@ module FixtureGenerator
 
   def self.seed_root(db)
     # Contact 1: Basic
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (1, 14, 'John', 'Doe', 'Acme Corp')")
+    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZNICKNAME, ZTITLE, ZSUFFIX, ZORGANIZATION) VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme Corp')")
     db.execute("INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL) VALUES (1, 'john@example.com', 'Work')")
     db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (1, '555-0100', 'Mobile')")
     
@@ -83,7 +86,7 @@ module FixtureGenerator
     db.execute("INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZSTREET, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL) VALUES (1, '123 Main St', 'Austin', 'TX', 'USA', 'Home')")
 
     # Group record
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (2, 15, 'Colleagues', NULL, NULL)")
+    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME) VALUES (2, 15, 'Colleagues')")
     db.execute("INSERT INTO Z_ABCDCONTACTGROUP (Z_CONTACT, Z_GROUP) VALUES (1, 2)")
   end
 

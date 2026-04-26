@@ -27,11 +27,24 @@ module Abbu
       private
 
       def headers
-        %w[Name Email Phone Company]
+        %w[Name Email Phone Company Address Groups]
       end
 
       def row(contact)
-        [contact.full_name, contact.emails.first, contact.phones.first, contact.company]
+        [
+          contact.full_name,
+          contact.emails.first&.fetch(:address, nil),
+          contact.phones.first&.fetch(:number, nil),
+          contact.company,
+          format_address(contact.addresses.first),
+          contact.groups.join(', ')
+        ]
+      end
+
+      def format_address(addr)
+        return nil unless addr
+
+        [addr[:street], addr[:city], addr[:state], addr[:zip], addr[:country]].compact.join(', ')
       end
     end
   end

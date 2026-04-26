@@ -3,15 +3,18 @@
 
 module Abbu
   class Contact
-    attr_accessor :first_name, :last_name, :emails, :phones, :company
+    attr_accessor :first_name, :last_name, :emails, :phones, :company, :addresses, :groups, :nickname, :prefix, :suffix
 
     def initialize
       @emails = []
       @phones = []
+      @addresses = []
+      @groups = []
     end
 
     def full_name
-      [first_name, last_name].compact.join(' ')
+      quoted_nickname = nickname ? "\"#{nickname}\"" : nil
+      [prefix, first_name, quoted_nickname, last_name, suffix].compact.join(' ')
     end
 
     def to_s

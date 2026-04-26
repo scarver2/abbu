@@ -7,19 +7,23 @@ require 'tmpdir'
 RSpec.describe Abbu::Parsers::SqliteParser do
   def create_schema(db)
     db.execute('CREATE TABLE ZABCDRECORD ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZORGANIZATION TEXT)')
+               '(Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZNICKNAME TEXT, ZTITLE TEXT, ZSUFFIX TEXT, ZORGANIZATION TEXT)')
     db.execute('CREATE TABLE ZABCDEMAILADDRESS ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZADDRESSNORMALIZED TEXT)')
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZADDRESSNORMALIZED TEXT, ZLABEL TEXT)')
     db.execute('CREATE TABLE ZABCDPHONENUMBER ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZFULLNUMBER TEXT)')
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZFULLNUMBER TEXT, ZLABEL TEXT)')
+    db.execute('CREATE TABLE ZABCDPOSTALADDRESS ' \
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT, ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT)')
+    db.execute('CREATE TABLE Z_ABCDCONTACTGROUP ' \
+               '(Z_CONTACT INTEGER, Z_GROUP INTEGER)')
   end
 
   def build_test_db(path)
     db = SQLite3::Database.new(path)
     create_schema(db)
-    db.execute("INSERT INTO ZABCDRECORD VALUES (1, 'Stan', 'Carver', 'Acme')")
-    db.execute("INSERT INTO ZABCDEMAILADDRESS VALUES (1, 1, 'stan@example.com')")
-    db.execute("INSERT INTO ZABCDPHONENUMBER VALUES (1, 1, '555-1234')")
+    db.execute("INSERT INTO ZABCDRECORD VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme')")
+    db.execute("INSERT INTO ZABCDEMAILADDRESS VALUES (1, 1, 'stan@example.com', 'Work')")
+    db.execute("INSERT INTO ZABCDPHONENUMBER VALUES (1, 1, '555-1234', 'Mobile')")
     db.close
   end
 
@@ -36,8 +40,8 @@ RSpec.describe Abbu::Parsers::SqliteParser do
         expect(contacts.first.first_name).to eq('Stan')
         expect(contacts.first.last_name).to  eq('Carver')
         expect(contacts.first.company).to    eq('Acme')
-        expect(contacts.first.emails).to     eq(['stan@example.com'])
-        expect(contacts.first.phones).to     eq(['555-1234'])
+        expect(contacts.first.emails).to     eq([{ address: 'stan@example.com', label: 'Work' }])
+        expect(contacts.first.phones).to     eq([{ number: '555-1234', label: 'Mobile' }])
       end
     end
 
@@ -46,7 +50,7 @@ RSpec.describe Abbu::Parsers::SqliteParser do
         db_path = File.join(dir, 'AddressBook-v22.abcddb')
         db = SQLite3::Database.new(db_path)
         create_schema(db)
-        db.execute("INSERT INTO ZABCDRECORD VALUES (1, 'Ghost', NULL, NULL)")
+        db.execute("INSERT INTO ZABCDRECORD VALUES (1, 14, 'Ghost', NULL, NULL, NULL, NULL, NULL)")
         db.close
 
         parser   = described_class.new(Pathname.new(db_path))
@@ -54,6 +58,22 @@ RSpec.describe Abbu::Parsers::SqliteParser do
 
         expect(contacts.first.emails).to eq([])
         expect(contacts.first.phones).to eq([])
+      end
+    end
+
+    it 'returns empty groups when Z_ABCDCONTACTGROUP does not exist' do
+      Dir.mktmpdir do |dir|
+        db_path = File.join(dir, 'AddressBook-v22.abcddb')
+        db = SQLite3::Database.new(db_path)
+        create_schema(db)
+        db.execute('DROP TABLE Z_ABCDCONTACTGROUP')
+        db.execute("INSERT INTO ZABCDRECORD VALUES (1, 14, 'Ghost', NULL, NULL, NULL, NULL, NULL)")
+        db.close
+
+        parser   = described_class.new(Pathname.new(db_path))
+        contacts = parser.contacts
+
+        expect(contacts.first.groups).to eq([])
       end
     end
   end
