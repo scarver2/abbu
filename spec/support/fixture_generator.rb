@@ -5,7 +5,7 @@ require 'fileutils'
 require 'pathname'
 require 'sqlite3'
 
-module FixtureGenerator
+module FixtureGenerator # rubocop:disable Metrics/ModuleLength
   def self.generate_abbu(path = 'spec/fixtures/TestContacts.abbu')
     FileUtils.rm_rf(path)
     FileUtils.mkdir_p("#{path}/Sources/TestAccount")
@@ -23,7 +23,7 @@ module FixtureGenerator
     db_synced.close
   end
 
-  def self.setup_schema(db)
+  def self.setup_schema(db) # rubocop:disable Metrics/MethodLength
     db.execute <<-SQL
       CREATE TABLE ZABCDRECORD (
         Z_PK INTEGER PRIMARY KEY,
@@ -76,36 +76,64 @@ module FixtureGenerator
     SQL
   end
 
-  def self.seed_root(db)
+  def self.seed_root(db) # rubocop:disable Metrics/MethodLength
     # Contact 1: Basic
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZNICKNAME, ZTITLE, ZSUFFIX, ZORGANIZATION) VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme Corp')")
-    db.execute("INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL) VALUES (1, 'john@example.com', 'Work')")
-    db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (1, '555-0100', 'Mobile')")
-    
+    db.execute <<-SQL
+      INSERT INTO ZABCDRECORD
+        (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZNICKNAME, ZTITLE, ZSUFFIX, ZORGANIZATION)
+      VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme Corp')
+    SQL
+    db.execute <<-SQL
+      INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL)
+      VALUES (1, 'john@example.com', 'Work')
+    SQL
+    db.execute <<-SQL
+      INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL)
+      VALUES (1, '555-0100', 'Mobile')
+    SQL
+
     # Address for Region filtering
-    db.execute("INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZSTREET, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL) VALUES (1, '123 Main St', 'Austin', 'TX', 'USA', 'Home')")
+    db.execute <<-SQL
+      INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZSTREET, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL)
+      VALUES (1, '123 Main St', 'Austin', 'TX', 'USA', 'Home')
+    SQL
 
     # Group record
     db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME) VALUES (2, 15, 'Colleagues')")
-    db.execute("INSERT INTO Z_ABCDCONTACTGROUP (Z_CONTACT, Z_GROUP) VALUES (1, 2)")
+    db.execute('INSERT INTO Z_ABCDCONTACTGROUP (Z_CONTACT, Z_GROUP) VALUES (1, 2)')
   end
 
-  def self.seed_synced(db)
+  def self.seed_synced(db) # rubocop:disable Metrics/MethodLength
     # Contact 3: In synced account
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (3, 14, 'Homer', 'Simpson', 'Globex Corporation')")
-    db.execute("INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL) VALUES (3, 'homer@globex.com', 'Work')")
-    db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (3, '555-0200', 'Work')")
-    
+    db.execute <<-SQL
+      INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION)
+      VALUES (3, 14, 'Homer', 'Simpson', 'Globex Corporation')
+    SQL
+    db.execute <<-SQL
+      INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL)
+      VALUES (3, 'homer@globex.com', 'Work')
+    SQL
+    db.execute <<-SQL
+      INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL)
+      VALUES (3, '555-0200', 'Work')
+    SQL
+
     # Custom contact field (We'll use a custom label for demonstration)
-    db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (3, '555-0201', 'Direct Line')")
+    db.execute <<-SQL
+      INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL)
+      VALUES (3, '555-0201', 'Direct Line')
+    SQL
 
     # Texas Region Contact
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (4, 14, 'Collin', 'McKinney', 'Collin County')")
-    db.execute("INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL) VALUES (4, 'McKinney', 'TX', 'USA', 'Work')")
+    db.execute <<-SQL
+      INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION)
+      VALUES (4, 14, 'Collin', 'McKinney', 'Collin County')
+    SQL
+    db.execute <<-SQL
+      INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL)
+      VALUES (4, 'McKinney', 'TX', 'USA', 'Work')
+    SQL
   end
 end
 
-if __FILE__ == $0
-  FixtureGenerator.generate_abbu
-  puts "Generated synthetic .abbu fixture at spec/fixtures/TestContacts.abbu"
-end
+FixtureGenerator.generate_abbu if __FILE__ == $PROGRAM_NAME

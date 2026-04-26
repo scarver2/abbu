@@ -1,7 +1,7 @@
 # spec/cli_spec.rb
 # frozen_string_literal: true
 
-RSpec.describe 'abbu CLI' do
+RSpec.describe 'abbu CLI' do # rubocop:disable RSpec/DescribeClass
   let(:bin) { File.expand_path('../bin/abbu', __dir__) }
 
   it 'prints help with no args' do

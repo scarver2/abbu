@@ -29,8 +29,17 @@ RSpec.describe Abbu::Exporters::CsvExporter do
         path = File.join(dir, 'out.csv')
         exporter.to_file(path)
         rows = CSV.read(path)
-        expect(rows.first).to eq(%w[Name Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles])
-        expect(rows[1]).to eq(['Stan Carver', 'stan@example.com', '555-1234', 'Acme', '123 Main, Dallas, TX, 75001, USA', 'Friends', 'https://stancarver.com', 'Great guy', 'John (brother)', '@scarver2 on Twitter'])
+
+        expected_headers = %w[Name Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles]
+        expect(rows.first).to eq(expected_headers)
+
+        expected_row = [
+          'Stan Carver', 'stan@example.com', '555-1234', 'Acme',
+          '123 Main, Dallas, TX, 75001, USA', 'Friends',
+          'https://stancarver.com', 'Great guy',
+          'John (brother)', '@scarver2 on Twitter'
+        ]
+        expect(rows[1]).to eq(expected_row)
       end
     end
   end

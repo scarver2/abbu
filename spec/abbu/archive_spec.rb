@@ -49,24 +49,53 @@ RSpec.describe Abbu::Archive do
       Dir.mktmpdir('sample.abbu') do |dir|
         db_path = File.join(dir, 'AddressBook-v22.abcddb')
         require 'sqlite3'
-        db = SQLite3::Database.new(db_path)
-        db.execute('CREATE TABLE ZABCDRECORD ' \
-                   '(Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZNICKNAME TEXT, ZTITLE TEXT, ZSUFFIX TEXT, ZORGANIZATION TEXT, ' \
-                   'ZJOBTITLE TEXT, ZDEPARTMENT TEXT, ZMAIDENNAME TEXT, ZPHONETICFIRSTNAME TEXT, ZPHONETICLASTNAME TEXT, ZPHONETICORGANIZATION TEXT, ' \
-                   'ZPRONOUNS TEXT, ZRINGTONE TEXT, ZTEXTTONE TEXT)')
-        db.execute('CREATE TABLE ZABCDEMAILADDRESS ' \
-                   '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZADDRESSNORMALIZED TEXT, ZLABEL TEXT)')
-        db.execute('CREATE TABLE ZABCDPHONENUMBER ' \
-                   '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZFULLNUMBER TEXT, ZLABEL TEXT)')
-        db.execute('CREATE TABLE ZABCDPOSTALADDRESS ' \
-                   '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT, ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT)')
-        db.execute('CREATE TABLE Z_ABCDCONTACTGROUP ' \
-                   '(Z_CONTACT INTEGER, Z_GROUP INTEGER)')
-        db.close
+        create_empty_schema(db_path)
 
         archive = described_class.new(dir)
         expect(archive.contacts).to eq([])
       end
     end
+  end
+
+  private
+
+  def create_empty_schema(db_path) # rubocop:disable Metrics/MethodLength
+    db = SQLite3::Database.new(db_path)
+    db.execute <<-SQL
+      CREATE TABLE ZABCDRECORD (
+        Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER,
+        ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZNICKNAME TEXT,
+        ZTITLE TEXT, ZSUFFIX TEXT, ZORGANIZATION TEXT,
+        ZJOBTITLE TEXT, ZDEPARTMENT TEXT, ZMAIDENNAME TEXT,
+        ZPHONETICFIRSTNAME TEXT, ZPHONETICLASTNAME TEXT,
+        ZPHONETICORGANIZATION TEXT, ZPRONOUNS TEXT,
+        ZRINGTONE TEXT, ZTEXTTONE TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDEMAILADDRESS (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZADDRESSNORMALIZED TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDPHONENUMBER (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZFULLNUMBER TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDPOSTALADDRESS (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT,
+        ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE Z_ABCDCONTACTGROUP (
+        Z_CONTACT INTEGER, Z_GROUP INTEGER
+      )
+    SQL
+    db.close
   end
 end

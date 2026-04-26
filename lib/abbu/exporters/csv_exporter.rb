@@ -31,17 +31,26 @@ module Abbu
       end
 
       def row(contact)
+        core_fields(contact) + extended_fields(contact)
+      end
+
+      def core_fields(contact)
         [
           contact.full_name,
           contact.emails.first&.fetch(:address, nil),
           contact.phones.first&.fetch(:number, nil),
           contact.company,
           format_address(contact.addresses.first),
-          contact.groups.join(', '),
+          contact.groups.join(', ')
+        ]
+      end
+
+      def extended_fields(contact)
+        [
           contact.urls.map { |u| u[:url] }.join(', '),
           contact.notes.join("\n"),
-          contact.related_names.map { |rn| "#{rn[:name]} (#{rn[:label]})" }.join(', '),
-          contact.social_profiles.map { |sp| "#{sp[:username]} on #{sp[:service]}" }.join(', ')
+          format_related_names(contact.related_names),
+          format_social_profiles(contact.social_profiles)
         ]
       end
 
@@ -49,6 +58,14 @@ module Abbu
         return nil unless addr
 
         [addr[:street], addr[:city], addr[:state], addr[:zip], addr[:country]].compact.join(', ')
+      end
+
+      def format_related_names(names)
+        names.map { |rn| "#{rn[:name]} (#{rn[:label]})" }.join(', ')
+      end
+
+      def format_social_profiles(profiles)
+        profiles.map { |sp| "#{sp[:username]} on #{sp[:service]}" }.join(', ')
       end
     end
   end

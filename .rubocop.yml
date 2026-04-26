@@ -3,6 +3,7 @@
 plugins:
   - rubocop-performance
   - rubocop-rake
+  - rubocop-rspec
 
 AllCops:
   NewCops: enable
@@ -27,3 +28,12 @@ Style/Documentation:
 Style/FrozenStringLiteralComment:
   Enabled: true
   EnforcedStyle: always
+
+RSpec/ExampleLength:
+  Max: 25
+
+RSpec/MultipleExpectations:
+  Max: 15
+
+RSpec/NestedGroups:
+  Max: 4

@@ -6,7 +6,21 @@ require_relative '../contact'
 
 module Abbu
   module Parsers
-    class SqliteParser
+    class SqliteParser # rubocop:disable Metrics/ClassLength
+      # Column-name → attr_accessor mapping for flat fields on ZABCDRECORD
+      RECORD_FIELD_MAP = {
+        'ZFIRSTNAME' => :first_name, 'ZLASTNAME' => :last_name,
+        'ZNICKNAME' => :nickname, 'ZTITLE' => :prefix,
+        'ZSUFFIX' => :suffix, 'ZORGANIZATION' => :company,
+        'ZJOBTITLE' => :job_title, 'ZDEPARTMENT' => :department,
+        'ZMAIDENNAME' => :maiden_name,
+        'ZPHONETICFIRSTNAME' => :phonetic_first_name,
+        'ZPHONETICLASTNAME' => :phonetic_last_name,
+        'ZPHONETICORGANIZATION' => :phonetic_company,
+        'ZPRONOUNS' => :pronouns,
+        'ZRINGTONE' => :ringtone, 'ZTEXTTONE' => :texttone
+      }.freeze
+
       def initialize(db_paths)
         @db_paths = Array(db_paths)
       end
@@ -46,7 +60,7 @@ module Abbu
         ).map { |row| { number: row['ZFULLNUMBER'], label: row['ZLABEL'] } }
       end
 
-      def addresses_for(db, record_id)
+      def addresses_for(db, record_id) # rubocop:disable Metrics/MethodLength
         db.execute(
           'SELECT ZSTREET, ZCITY, ZSTATE, ZZIPCODE, ZCOUNTRYNAME, ZLABEL FROM ZABCDPOSTALADDRESS WHERE ZOWNER = ?',
           record_id
@@ -63,7 +77,6 @@ module Abbu
       end
 
       def groups_for(db, record_id)
-        # In our simplified schema, Z_ABCDCONTACTGROUP joins to ZABCDRECORD
         query = <<-SQL
           SELECT g.ZFIRSTNAME
           FROM Z_ABCDCONTACTGROUP j
@@ -72,7 +85,6 @@ module Abbu
         SQL
         db.execute(query, record_id).map { |row| row['ZFIRSTNAME'] }
       rescue SQLite3::SQLException
-        # If the join table doesn't exist in a real DB, just return empty
         []
       end
 
@@ -89,7 +101,7 @@ module Abbu
         db.execute(
           'SELECT ZTEXT FROM ZABCDNOTE WHERE ZCONTACT = ?',
           record_id
-        ).map { |row| row['ZTEXT'] }.compact
+        ).filter_map { |row| row['ZTEXT'] }
       rescue SQLite3::SQLException
         []
       end
@@ -114,30 +126,26 @@ module Abbu
 
       def build_contact(db, row)
         contact = Contact.new
-        contact.first_name = row['ZFIRSTNAME']
-        contact.last_name  = row['ZLASTNAME']
-        contact.nickname   = row['ZNICKNAME']
-        contact.prefix     = row['ZTITLE']
-        contact.suffix     = row['ZSUFFIX']
-        contact.company             = row['ZORGANIZATION']
-        contact.job_title           = row['ZJOBTITLE']
-        contact.department          = row['ZDEPARTMENT']
-        contact.maiden_name         = row['ZMAIDENNAME']
-        contact.phonetic_first_name = row['ZPHONETICFIRSTNAME']
-        contact.phonetic_last_name  = row['ZPHONETICLASTNAME']
-        contact.phonetic_company    = row['ZPHONETICORGANIZATION']
-        contact.pronouns            = row['ZPRONOUNS']
-        contact.ringtone            = row['ZRINGTONE']
-        contact.texttone            = row['ZTEXTTONE']
-        contact.emails     = emails_for(db, row['Z_PK'])
-        contact.phones     = phones_for(db, row['Z_PK'])
-        contact.addresses  = addresses_for(db, row['Z_PK'])
-        contact.groups     = groups_for(db, row['Z_PK'])
-        contact.urls       = urls_for(db, row['Z_PK'])
-        contact.notes      = notes_for(db, row['Z_PK'])
-        contact.related_names = related_names_for(db, row['Z_PK'])
-        contact.social_profiles = social_profiles_for(db, row['Z_PK'])
+        assign_flat_fields(contact, row)
+        assign_relational_fields(contact, db, row['Z_PK'])
         contact
+      end
+
+      def assign_flat_fields(contact, row)
+        RECORD_FIELD_MAP.each do |column, attr|
+          contact.public_send(:"#{attr}=", row[column])
+        end
+      end
+
+      def assign_relational_fields(contact, db, record_id) # rubocop:disable Metrics/AbcSize
+        contact.emails          = emails_for(db, record_id)
+        contact.phones          = phones_for(db, record_id)
+        contact.addresses       = addresses_for(db, record_id)
+        contact.groups          = groups_for(db, record_id)
+        contact.urls            = urls_for(db, record_id)
+        contact.notes           = notes_for(db, record_id)
+        contact.related_names   = related_names_for(db, record_id)
+        contact.social_profiles = social_profiles_for(db, record_id)
       end
     end
   end

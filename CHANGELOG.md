@@ -11,6 +11,34 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-04-26
+
+### Added
+
+- Full Apple Contacts schema support: job title, department, maiden name, phonetic names, pronouns, ringtone, texttone
+- Relational table parsing: URLs, notes, related names (family/business), social profiles (Twitter, etc.)
+- Nickname, prefix, and suffix fields with smart `full_name` formatting
+- Hash-based email/phone data preserving custom labels (e.g. "Direct Line", "Work")
+- Address, group, URL, notes, related names, and social profiles in CSV export
+- Comprehensive JSON export with all contact fields
+- vCard 3.0 export with ADR, URL, NICKNAME, TITLE, NOTE, X-SOCIALPROFILE
+- `rubocop-rspec` plugin integration
+- 100% line coverage across all 44 specs
+
+### Changed
+
+- Refactored `SqliteParser` to use `RECORD_FIELD_MAP` constant for maintainability
+- Refactored `CsvExporter` into `core_fields`/`extended_fields` for cleaner ABC metrics
+- All specs comply with rubocop-rspec conventions
+
+## [0.1.1] - 2026-04-23
+
+### Fixed
+
+- `require 'pathname'` missing in `archive.rb` causing `NameError` in isolation
+- Added regression guard spec for file require isolation
+
+
 ## [0.1.0] - 2026-04-12
 
 ### Added

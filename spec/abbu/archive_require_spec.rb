@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'English'
-RSpec.describe 'File Require Isolation' do
+RSpec.describe 'File Require Isolation' do # rubocop:disable RSpec/DescribeClass
   it 'can require abbu/archive without prior standard library requires' do
     # Run in an isolated Ruby process to ensure dependencies like 'pathname'
     # are explicitly required within the file itself, preventing NameErrors.

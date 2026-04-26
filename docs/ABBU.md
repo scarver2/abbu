@@ -44,20 +44,39 @@ AddressBook-v22.abcddb
 
 Key tables:
 
-| Table                  | Purpose                              |
-|------------------------|--------------------------------------|
-| `ZABCDRECORD`          | One row per contact (name, company)  |
-| `ZABCDEMAILADDRESS`    | Email addresses (linked by `ZOWNER`) |
-| `ZABCDPHONENUMBER`     | Phone numbers (linked by `ZOWNER`)   |
+| Table                    | Purpose                                |
+|--------------------------|----------------------------------------|
+| `ZABCDRECORD`            | One row per contact (name, company)    |
+| `ZABCDEMAILADDRESS`      | Email addresses (linked by `ZOWNER`)   |
+| `ZABCDPHONENUMBER`       | Phone numbers (linked by `ZOWNER`)     |
+| `ZABCDPOSTALADDRESS`     | Street addresses (linked by `ZOWNER`)  |
+| `Z_ABCDCONTACTGROUP`     | Group membership join table            |
+| `ZABCDURLADDRESS`        | URLs (linked by `ZOWNER`)              |
+| `ZABCDNOTE`              | Notes (linked by `ZCONTACT`)           |
+| `ZABCDRELATEDNAME`       | Related names (linked by `ZOWNER`)     |
+| `ZABCDSOCIALPROFILE`     | Social profiles (linked by `ZOWNER`)   |
 
 Notable columns in `ZABCDRECORD`:
 
-| Column          | Description      |
-|-----------------|------------------|
-| `Z_PK`          | Primary key      |
-| `ZFIRSTNAME`    | First name       |
-| `ZLASTNAME`     | Last name        |
-| `ZORGANIZATION` | Company / org    |
+| Column                   | Description              |
+|--------------------------|--------------------------|
+| `Z_PK`                   | Primary key              |
+| `Z_ENT`                  | Entity type (14=contact) |
+| `ZFIRSTNAME`             | First name               |
+| `ZLASTNAME`              | Last name                |
+| `ZNICKNAME`              | Nickname                 |
+| `ZTITLE`                 | Prefix (e.g. "Dr.")      |
+| `ZSUFFIX`                | Suffix (e.g. "Jr.")      |
+| `ZORGANIZATION`          | Company / org            |
+| `ZJOBTITLE`              | Job title                |
+| `ZDEPARTMENT`            | Department               |
+| `ZMAIDENNAME`            | Maiden name              |
+| `ZPHONETICFIRSTNAME`     | Phonetic first name      |
+| `ZPHONETICLASTNAME`      | Phonetic last name       |
+| `ZPHONETICORGANIZATION`  | Phonetic company         |
+| `ZPRONOUNS`              | Pronouns                 |
+| `ZRINGTONE`              | Ringtone                 |
+| `ZTEXTTONE`              | Text tone                |
 
 ### 2. Plist / `.abcdp` (legacy macOS)
 

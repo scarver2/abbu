@@ -5,33 +5,78 @@ require 'sqlite3'
 require 'tmpdir'
 
 RSpec.describe Abbu::Parsers::SqliteParser do
-  def create_schema(db)
-    db.execute('CREATE TABLE ZABCDRECORD ' \
-               '(Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZNICKNAME TEXT, ZTITLE TEXT, ZSUFFIX TEXT, ZORGANIZATION TEXT, ' \
-               'ZJOBTITLE TEXT, ZDEPARTMENT TEXT, ZMAIDENNAME TEXT, ZPHONETICFIRSTNAME TEXT, ZPHONETICLASTNAME TEXT, ZPHONETICORGANIZATION TEXT, ' \
-               'ZPRONOUNS TEXT, ZRINGTONE TEXT, ZTEXTTONE TEXT)')
-    db.execute('CREATE TABLE ZABCDEMAILADDRESS ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZADDRESSNORMALIZED TEXT, ZLABEL TEXT)')
-    db.execute('CREATE TABLE ZABCDPHONENUMBER ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZFULLNUMBER TEXT, ZLABEL TEXT)')
-    db.execute('CREATE TABLE ZABCDPOSTALADDRESS ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT, ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT)')
-    db.execute('CREATE TABLE Z_ABCDCONTACTGROUP ' \
-               '(Z_CONTACT INTEGER, Z_GROUP INTEGER)')
-    db.execute('CREATE TABLE ZABCDURLADDRESS ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZURL TEXT, ZLABEL TEXT)')
-    db.execute('CREATE TABLE ZABCDNOTE ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZCONTACT INTEGER, ZTEXT TEXT)')
-    db.execute('CREATE TABLE ZABCDRELATEDNAME ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZNAME TEXT, ZLABEL TEXT)')
-    db.execute('CREATE TABLE ZABCDSOCIALPROFILE ' \
-               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSERVICENAME TEXT, ZUSERNAME TEXT)')
+  def create_schema(db) # rubocop:disable Metrics/MethodLength
+    db.execute <<-SQL
+      CREATE TABLE ZABCDRECORD (
+        Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER,
+        ZFIRSTNAME TEXT, ZLASTNAME TEXT, ZNICKNAME TEXT,
+        ZTITLE TEXT, ZSUFFIX TEXT, ZORGANIZATION TEXT,
+        ZJOBTITLE TEXT, ZDEPARTMENT TEXT, ZMAIDENNAME TEXT,
+        ZPHONETICFIRSTNAME TEXT, ZPHONETICLASTNAME TEXT,
+        ZPHONETICORGANIZATION TEXT, ZPRONOUNS TEXT,
+        ZRINGTONE TEXT, ZTEXTTONE TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDEMAILADDRESS (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZADDRESSNORMALIZED TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDPHONENUMBER (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZFULLNUMBER TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDPOSTALADDRESS (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT,
+        ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE Z_ABCDCONTACTGROUP (
+        Z_CONTACT INTEGER, Z_GROUP INTEGER
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDURLADDRESS (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZURL TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDNOTE (
+        Z_PK INTEGER PRIMARY KEY, ZCONTACT INTEGER,
+        ZTEXT TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDRELATEDNAME (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZNAME TEXT, ZLABEL TEXT
+      )
+    SQL
+    db.execute <<-SQL
+      CREATE TABLE ZABCDSOCIALPROFILE (
+        Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER,
+        ZSERVICENAME TEXT, ZUSERNAME TEXT
+      )
+    SQL
   end
 
-  def build_test_db(path)
+  def build_test_db(path) # rubocop:disable Metrics/MethodLength
     db = SQLite3::Database.new(path)
     create_schema(db)
-    db.execute("INSERT INTO ZABCDRECORD VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme', 'Engineer', 'IT', 'Smith', 'Stan', 'Karver', 'Akme', 'he/him', 'Marimba', 'Ding')")
+    db.execute <<-SQL
+      INSERT INTO ZABCDRECORD VALUES (
+        1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II',
+        'Acme', 'Engineer', 'IT', 'Smith', 'Stan', 'Karver',
+        'Akme', 'he/him', 'Marimba', 'Ding'
+      )
+    SQL
     db.execute("INSERT INTO ZABCDEMAILADDRESS VALUES (1, 1, 'stan@example.com', 'Work')")
     db.execute("INSERT INTO ZABCDPHONENUMBER VALUES (1, 1, '555-1234', 'Mobile')")
     db.execute("INSERT INTO ZABCDURLADDRESS VALUES (1, 1, 'https://stancarver.com', 'homepage')")
@@ -42,33 +87,35 @@ RSpec.describe Abbu::Parsers::SqliteParser do
   end
 
   describe '#contacts' do
-    it 'returns contacts from the SQLite database' do
+    it 'parses all flat and relational fields from a SQLite database' do # rubocop:disable RSpec/MultipleExpectations
       Dir.mktmpdir do |dir|
         db_path = File.join(dir, 'AddressBook-v22.abcddb')
         build_test_db(db_path)
 
         parser   = described_class.new(Pathname.new(db_path))
-        contacts = parser.contacts
+        contact  = parser.contacts.first
 
-        expect(contacts.size).to eq(1)
-        expect(contacts.first.first_name).to eq('Stan')
-        expect(contacts.first.last_name).to  eq('Carver')
-        expect(contacts.first.company).to    eq('Acme')
-        expect(contacts.first.emails).to     eq([{ address: 'stan@example.com', label: 'Work' }])
-        expect(contacts.first.phones).to     eq([{ number: '555-1234', label: 'Mobile' }])
-        expect(contacts.first.job_title).to  eq('Engineer')
-        expect(contacts.first.department).to eq('IT')
-        expect(contacts.first.maiden_name).to eq('Smith')
-        expect(contacts.first.phonetic_first_name).to eq('Stan')
-        expect(contacts.first.phonetic_last_name).to eq('Karver')
-        expect(contacts.first.phonetic_company).to eq('Akme')
-        expect(contacts.first.pronouns).to eq('he/him')
-        expect(contacts.first.ringtone).to eq('Marimba')
-        expect(contacts.first.texttone).to eq('Ding')
-        expect(contacts.first.urls).to eq([{ url: 'https://stancarver.com', label: 'homepage' }])
-        expect(contacts.first.notes).to eq(['Met at RubyConf'])
-        expect(contacts.first.related_names).to eq([{ name: 'John', label: 'brother' }])
-        expect(contacts.first.social_profiles).to eq([{ service: 'Twitter', username: '@scarver2' }])
+        # Flat fields
+        expect(contact.first_name).to eq('Stan')
+        expect(contact.last_name).to  eq('Carver')
+        expect(contact.company).to    eq('Acme')
+        expect(contact.job_title).to  eq('Engineer')
+        expect(contact.department).to eq('IT')
+        expect(contact.maiden_name).to eq('Smith')
+        expect(contact.phonetic_first_name).to eq('Stan')
+        expect(contact.phonetic_last_name).to eq('Karver')
+        expect(contact.phonetic_company).to eq('Akme')
+        expect(contact.pronouns).to eq('he/him')
+        expect(contact.ringtone).to eq('Marimba')
+        expect(contact.texttone).to eq('Ding')
+
+        # Relational fields
+        expect(contact.emails).to eq([{ address: 'stan@example.com', label: 'Work' }])
+        expect(contact.phones).to eq([{ number: '555-1234', label: 'Mobile' }])
+        expect(contact.urls).to eq([{ url: 'https://stancarver.com', label: 'homepage' }])
+        expect(contact.notes).to eq(['Met at RubyConf'])
+        expect(contact.related_names).to eq([{ name: 'John', label: 'brother' }])
+        expect(contact.social_profiles).to eq([{ service: 'Twitter', username: '@scarver2' }])
       end
     end
 
