@@ -30,10 +30,10 @@ RSpec.describe 'Advanced Exporting (TDD Scaffold)' do
     it 'captures custom labels for phone numbers' do
       pending 'Custom label extraction (ZLABEL) is not yet mapped to phone numbers'
       
-      jane = contacts.find { |c| c.first_name == 'Jane' }
+      homer = contacts.find { |c| c.first_name == 'Homer' }
       
       # Expecting a structure like [{ number: "555-0201", label: "Direct Line" }]
-      direct_lines = jane.phones.select { |p| p[:label] == 'Direct Line' }
+      direct_lines = homer.phones.select { |p| p[:label] == 'Direct Line' }
       expect(direct_lines).not_to be_empty
       expect(direct_lines.first[:number]).to eq('555-0201')
     end

@@ -89,8 +89,8 @@ module FixtureGenerator
 
   def self.seed_synced(db)
     # Contact 3: In synced account
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (3, 14, 'Jane', 'Smith', 'Globex')")
-    db.execute("INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL) VALUES (3, 'jane@globex.com', 'Work')")
+    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (3, 14, 'Homer', 'Simpson', 'Globex Corporation')")
+    db.execute("INSERT INTO ZABCDEMAILADDRESS (ZOWNER, ZADDRESSNORMALIZED, ZLABEL) VALUES (3, 'homer@globex.com', 'Work')")
     db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (3, '555-0200', 'Work')")
     
     # Custom contact field (We'll use a custom label for demonstration)
