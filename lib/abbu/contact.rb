@@ -5,13 +5,17 @@ module Abbu
   class Contact
     attr_accessor :first_name, :last_name, :emails, :phones, :company, :addresses, :groups, :nickname, :prefix, :suffix,
                   :job_title, :department, :maiden_name, :phonetic_first_name, :phonetic_last_name, :phonetic_company,
-                  :pronouns, :ringtone, :texttone
+                  :pronouns, :ringtone, :texttone, :urls, :notes, :related_names, :social_profiles
 
     def initialize
       @emails = []
       @phones = []
       @addresses = []
       @groups = []
+      @urls = []
+      @notes = []
+      @related_names = []
+      @social_profiles = []
     end
 
     def full_name

@@ -14,6 +14,10 @@ RSpec.describe Abbu::Exporters::CsvExporter do
     c.company    = 'Acme'
     c.addresses  = [{ street: '123 Main', city: 'Dallas', state: 'TX', zip: '75001', country: 'USA' }]
     c.groups     = ['Friends']
+    c.urls       = [{ url: 'https://stancarver.com', label: 'homepage' }]
+    c.notes      = ['Great guy']
+    c.related_names = [{ name: 'John', label: 'brother' }]
+    c.social_profiles = [{ service: 'Twitter', username: '@scarver2' }]
     c
   end
 
@@ -25,8 +29,8 @@ RSpec.describe Abbu::Exporters::CsvExporter do
         path = File.join(dir, 'out.csv')
         exporter.to_file(path)
         rows = CSV.read(path)
-        expect(rows.first).to eq(%w[Name Email Phone Company Address Groups])
-        expect(rows[1]).to eq(['Stan Carver', 'stan@example.com', '555-1234', 'Acme', '123 Main, Dallas, TX, 75001, USA', 'Friends'])
+        expect(rows.first).to eq(%w[Name Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles])
+        expect(rows[1]).to eq(['Stan Carver', 'stan@example.com', '555-1234', 'Acme', '123 Main, Dallas, TX, 75001, USA', 'Friends', 'https://stancarver.com', 'Great guy', 'John (brother)', '@scarver2 on Twitter'])
       end
     end
   end

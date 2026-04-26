@@ -76,6 +76,42 @@ module Abbu
         []
       end
 
+      def urls_for(db, record_id)
+        db.execute(
+          'SELECT ZURL, ZLABEL FROM ZABCDURLADDRESS WHERE ZOWNER = ?',
+          record_id
+        ).map { |row| { url: row['ZURL'], label: row['ZLABEL'] } }
+      rescue SQLite3::SQLException
+        []
+      end
+
+      def notes_for(db, record_id)
+        db.execute(
+          'SELECT ZTEXT FROM ZABCDNOTE WHERE ZCONTACT = ?',
+          record_id
+        ).map { |row| row['ZTEXT'] }.compact
+      rescue SQLite3::SQLException
+        []
+      end
+
+      def related_names_for(db, record_id)
+        db.execute(
+          'SELECT ZNAME, ZLABEL FROM ZABCDRELATEDNAME WHERE ZOWNER = ?',
+          record_id
+        ).map { |row| { name: row['ZNAME'], label: row['ZLABEL'] } }
+      rescue SQLite3::SQLException
+        []
+      end
+
+      def social_profiles_for(db, record_id)
+        db.execute(
+          'SELECT ZSERVICENAME, ZUSERNAME FROM ZABCDSOCIALPROFILE WHERE ZOWNER = ?',
+          record_id
+        ).map { |row| { service: row['ZSERVICENAME'], username: row['ZUSERNAME'] } }
+      rescue SQLite3::SQLException
+        []
+      end
+
       def build_contact(db, row)
         contact = Contact.new
         contact.first_name = row['ZFIRSTNAME']
@@ -97,6 +133,10 @@ module Abbu
         contact.phones     = phones_for(db, row['Z_PK'])
         contact.addresses  = addresses_for(db, row['Z_PK'])
         contact.groups     = groups_for(db, row['Z_PK'])
+        contact.urls       = urls_for(db, row['Z_PK'])
+        contact.notes      = notes_for(db, row['Z_PK'])
+        contact.related_names = related_names_for(db, row['Z_PK'])
+        contact.social_profiles = social_profiles_for(db, row['Z_PK'])
         contact
       end
     end

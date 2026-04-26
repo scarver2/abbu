@@ -27,7 +27,7 @@ module Abbu
       private
 
       def headers
-        %w[Name Email Phone Company Address Groups]
+        %w[Name Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles]
       end
 
       def row(contact)
@@ -37,7 +37,11 @@ module Abbu
           contact.phones.first&.fetch(:number, nil),
           contact.company,
           format_address(contact.addresses.first),
-          contact.groups.join(', ')
+          contact.groups.join(', '),
+          contact.urls.map { |u| u[:url] }.join(', '),
+          contact.notes.join("\n"),
+          contact.related_names.map { |rn| "#{rn[:name]} (#{rn[:label]})" }.join(', '),
+          contact.social_profiles.map { |sp| "#{sp[:username]} on #{sp[:service]}" }.join(', ')
         ]
       end
 

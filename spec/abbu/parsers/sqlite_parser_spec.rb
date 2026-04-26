@@ -18,6 +18,14 @@ RSpec.describe Abbu::Parsers::SqliteParser do
                '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSTREET TEXT, ZCITY TEXT, ZSTATE TEXT, ZZIPCODE TEXT, ZCOUNTRYNAME TEXT, ZLABEL TEXT)')
     db.execute('CREATE TABLE Z_ABCDCONTACTGROUP ' \
                '(Z_CONTACT INTEGER, Z_GROUP INTEGER)')
+    db.execute('CREATE TABLE ZABCDURLADDRESS ' \
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZURL TEXT, ZLABEL TEXT)')
+    db.execute('CREATE TABLE ZABCDNOTE ' \
+               '(Z_PK INTEGER PRIMARY KEY, ZCONTACT INTEGER, ZTEXT TEXT)')
+    db.execute('CREATE TABLE ZABCDRELATEDNAME ' \
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZNAME TEXT, ZLABEL TEXT)')
+    db.execute('CREATE TABLE ZABCDSOCIALPROFILE ' \
+               '(Z_PK INTEGER PRIMARY KEY, ZOWNER INTEGER, ZSERVICENAME TEXT, ZUSERNAME TEXT)')
   end
 
   def build_test_db(path)
@@ -26,6 +34,10 @@ RSpec.describe Abbu::Parsers::SqliteParser do
     db.execute("INSERT INTO ZABCDRECORD VALUES (1, 14, 'Stan', 'Carver', 'Stretch', 'Honorable', 'II', 'Acme', 'Engineer', 'IT', 'Smith', 'Stan', 'Karver', 'Akme', 'he/him', 'Marimba', 'Ding')")
     db.execute("INSERT INTO ZABCDEMAILADDRESS VALUES (1, 1, 'stan@example.com', 'Work')")
     db.execute("INSERT INTO ZABCDPHONENUMBER VALUES (1, 1, '555-1234', 'Mobile')")
+    db.execute("INSERT INTO ZABCDURLADDRESS VALUES (1, 1, 'https://stancarver.com', 'homepage')")
+    db.execute("INSERT INTO ZABCDNOTE VALUES (1, 1, 'Met at RubyConf')")
+    db.execute("INSERT INTO ZABCDRELATEDNAME VALUES (1, 1, 'John', 'brother')")
+    db.execute("INSERT INTO ZABCDSOCIALPROFILE VALUES (1, 1, 'Twitter', '@scarver2')")
     db.close
   end
 
@@ -53,6 +65,10 @@ RSpec.describe Abbu::Parsers::SqliteParser do
         expect(contacts.first.pronouns).to eq('he/him')
         expect(contacts.first.ringtone).to eq('Marimba')
         expect(contacts.first.texttone).to eq('Ding')
+        expect(contacts.first.urls).to eq([{ url: 'https://stancarver.com', label: 'homepage' }])
+        expect(contacts.first.notes).to eq(['Met at RubyConf'])
+        expect(contacts.first.related_names).to eq([{ name: 'John', label: 'brother' }])
+        expect(contacts.first.social_profiles).to eq([{ service: 'Twitter', username: '@scarver2' }])
       end
     end
 
