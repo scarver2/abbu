@@ -96,9 +96,9 @@ module FixtureGenerator
     # Custom contact field (We'll use a custom label for demonstration)
     db.execute("INSERT INTO ZABCDPHONENUMBER (ZOWNER, ZFULLNUMBER, ZLABEL) VALUES (3, '555-0201', 'Direct Line')")
 
-    # European Region Contact
-    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (4, 14, 'Hans', 'Muller', 'GmbH')")
-    db.execute("INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZCITY, ZCOUNTRYNAME, ZLABEL) VALUES (4, 'Berlin', 'Germany', 'Work')")
+    # Texas Region Contact
+    db.execute("INSERT INTO ZABCDRECORD (Z_PK, Z_ENT, ZFIRSTNAME, ZLASTNAME, ZORGANIZATION) VALUES (4, 14, 'Collin', 'McKinney', 'Collin County')")
+    db.execute("INSERT INTO ZABCDPOSTALADDRESS (ZOWNER, ZCITY, ZSTATE, ZCOUNTRYNAME, ZLABEL) VALUES (4, 'McKinney', 'TX', 'USA', 'Work')")
   end
 end
 

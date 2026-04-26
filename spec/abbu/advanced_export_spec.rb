@@ -8,21 +8,21 @@ RSpec.describe 'Advanced Exporting (TDD Scaffold)' do
   let(:contacts) { archive.contacts }
 
   context 'Filtering by Region (Address Data)' do
-    it 'can filter contacts by Country' do
+    it 'can filter contacts by City' do
       pending 'Address parsing (ZABCDPOSTALADDRESS) is not yet implemented'
       
       # Assuming we add an address array to Contact and an easy filter method
-      german_contacts = contacts.select { |c| c.addresses.any? { |a| a[:country] == 'Germany' } }
-      expect(german_contacts.count).to eq(1)
-      expect(german_contacts.first.full_name).to eq('Hans Muller')
+      mckinney_contacts = contacts.select { |c| c.addresses.any? { |a| a[:city] == 'McKinney' } }
+      expect(mckinney_contacts.count).to eq(1)
+      expect(mckinney_contacts.first.full_name).to eq('Collin McKinney')
     end
 
-    it 'can filter contacts by State/City' do
+    it 'can filter contacts by State' do
       pending 'Address parsing (ZABCDPOSTALADDRESS) is not yet implemented'
 
       tx_contacts = contacts.select { |c| c.addresses.any? { |a| a[:state] == 'TX' } }
-      expect(tx_contacts.count).to eq(1)
-      expect(tx_contacts.first.full_name).to eq('John Doe')
+      expect(tx_contacts.count).to eq(2)
+      expect(tx_contacts.map(&:full_name)).to contain_exactly('John Doe', 'Collin McKinney')
     end
   end
 
