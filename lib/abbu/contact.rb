@@ -3,7 +3,9 @@
 
 module Abbu
   class Contact
-    attr_accessor :first_name, :last_name, :emails, :phones, :company, :addresses, :groups, :nickname, :prefix, :suffix
+    attr_accessor :first_name, :last_name, :emails, :phones, :company, :addresses, :groups, :nickname, :prefix, :suffix,
+                  :job_title, :department, :maiden_name, :phonetic_first_name, :phonetic_last_name, :phonetic_company,
+                  :pronouns, :ringtone, :texttone
 
     def initialize
       @emails = []

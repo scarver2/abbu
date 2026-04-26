@@ -83,7 +83,16 @@ module Abbu
         contact.nickname   = row['ZNICKNAME']
         contact.prefix     = row['ZTITLE']
         contact.suffix     = row['ZSUFFIX']
-        contact.company    = row['ZORGANIZATION']
+        contact.company             = row['ZORGANIZATION']
+        contact.job_title           = row['ZJOBTITLE']
+        contact.department          = row['ZDEPARTMENT']
+        contact.maiden_name         = row['ZMAIDENNAME']
+        contact.phonetic_first_name = row['ZPHONETICFIRSTNAME']
+        contact.phonetic_last_name  = row['ZPHONETICLASTNAME']
+        contact.phonetic_company    = row['ZPHONETICORGANIZATION']
+        contact.pronouns            = row['ZPRONOUNS']
+        contact.ringtone            = row['ZRINGTONE']
+        contact.texttone            = row['ZTEXTTONE']
         contact.emails     = emails_for(db, row['Z_PK'])
         contact.phones     = phones_for(db, row['Z_PK'])
         contact.addresses  = addresses_for(db, row['Z_PK'])
