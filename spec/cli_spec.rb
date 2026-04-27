@@ -26,10 +26,9 @@ RSpec.describe 'abbu CLI' do # rubocop:disable RSpec/DescribeClass
     end
   end
 
-  it 'prints dedupe results for a plist-only bundle' do
-    Dir.mktmpdir('sample.abbu') do |dir|
-      output = `#{bin} "#{dir}" --dedupe 2>&1`
-      expect(output).to include('No duplicates found')
-    end
+  it 'prints stats for a plist-based bundle with contacts' do
+    fixture = File.expand_path('fixtures/PlistContacts.abbu', __dir__)
+    output = `#{bin} "#{fixture}" --stats 2>&1`
+    expect(output).to include('Total contacts : 2')
   end
 end

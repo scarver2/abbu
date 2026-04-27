@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Email</key>
+	<dict>
+		<key>values</key>
+		<array>
+			<dict>
+				<key>label</key>
+				<string>Work</string>
+				<key>value</key>
+				<string>homer@globex.com</string>
+			</dict>
+		</array>
+	</dict>
+	<key>First</key>
+	<string>Homer</string>
+	<key>Last</key>
+	<string>Simpson</string>
+	<key>Organization</key>
+	<string>Globex Corporation</string>
+	<key>Phone</key>
+	<dict>
+		<key>values</key>
+		<array>
+			<dict>
+				<key>label</key>
+				<string>Work</string>
+				<key>value</key>
+				<string>555-0200</string>
+			</dict>
+		</array>
+	</dict>
+</dict>
+</plist>
