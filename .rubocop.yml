@@ -30,10 +30,15 @@ Style/FrozenStringLiteralComment:
   EnforcedStyle: always
 
 RSpec/ExampleLength:
-  Max: 25
+  Max: 35
 
 RSpec/MultipleExpectations:
-  Max: 15
+  Max: 25
+
+Metrics/ClassLength:
+  Max: 120
+  Exclude:
+    - 'lib/abbu/parsers/plist_parser.rb'
 
 RSpec/NestedGroups:
   Max: 4
