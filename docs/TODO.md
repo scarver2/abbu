@@ -62,43 +62,43 @@ Feature checklist organized by release version.
 - [x] `Archive` scans `**/*.abcdp` across entire bundle tree
 - [x] `plist` gem (~> 3.7) runtime dependency
 - [x] Plist fixture files for integration testing
-- [ ] Birthday / anniversary date parsing (plist `Birthday` key)
-- [ ] Lunar birthday support
-- [ ] Middle name extraction
-- [ ] Instant messaging addresses (AIM, Jabber, etc.)
-- [ ] Verification code field support
+- [x] Birthday / anniversary date parsing (plist `Birthday` key)
+- [x] Lunar birthday support
+- [x] Middle name extraction
+- [x] Instant messaging addresses (AIM, Jabber, etc.)
+- [x] Verification code field support
 
 ---
 
 ## v0.2.1 — Date Fields
 
-- [ ] `dates` attribute on `Contact` (array of hashes: `{ label:, date: }`)
-- [ ] SqliteParser: parse `ZABCDDATECOMPONENTS` (year/month/day separate columns)
-- [ ] PlistParser: parse `Birthday` key
-- [ ] Anniversary and custom date labels
-- [ ] Lunar birthday handling
-- [ ] CSV/JSON/vCard export of date fields (`BDAY`, `ANNIVERSARY` in vCard)
+- [x] `dates` attribute on `Contact` (array of hashes: `{ label:, date: }`)
+- [x] SqliteParser: parse `ZABCDDATECOMPONENTS` (year/month/day separate columns)
+- [x] PlistParser: parse `Birthday` key
+- [x] Anniversary and custom date labels
+- [x] Lunar birthday handling
+- [x] CSV/JSON/vCard export of date fields (`BDAY`, `ANNIVERSARY` in vCard)
 
 ---
 
 ## v0.2.2 — Instant Messaging & Verification
 
-- [ ] `instant_messages` attribute on `Contact`
-- [ ] SqliteParser: parse `ZABCDMESSAGINGADDRESS`
-- [ ] PlistParser: parse `InstantMessage` key
-- [ ] Verification code field
-- [ ] CSV/JSON/vCard export (`IMPP` in vCard)
+- [x] `instant_messages` attribute on `Contact`
+- [x] SqliteParser: parse `ZABCDMESSAGINGADDRESS`
+- [x] PlistParser: parse `InstantMessage` key
+- [x] Verification code field
+- [x] CSV/JSON/vCard export (`IMPP` in vCard)
 
 ---
 
 ## v0.2.3 — Middle Name & Completeness
 
-- [ ] `middle_name` attribute on `Contact`
-- [ ] Update `full_name` to include middle name
-- [ ] SqliteParser: `ZMIDDLENAME` column
-- [ ] PlistParser: `Middle` key
-- [ ] Phonetic middle name support
-- [ ] vCard `N` field with middle name component
+- [x] `middle_name` attribute on `Contact`
+- [x] Update `full_name` to include middle name
+- [x] SqliteParser: `ZMIDDLENAME` column
+- [x] PlistParser: `Middle` key
+- [x] Phonetic middle name support
+- [x] vCard `N` field with middle name component
 
 ---
 

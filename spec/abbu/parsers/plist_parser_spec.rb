@@ -12,13 +12,30 @@ RSpec.describe Abbu::Parsers::PlistParser do
   def build_stan_plist # rubocop:disable Metrics/MethodLength
     {
       'First' => 'Stan',
+      'Middle' => 'The Man',
       'Last' => 'Carver',
+      'VerificationCode' => 'V123',
       'Organization' => 'Acme Corp',
       'JobTitle' => 'Engineer',
+      'PhoneticFirst' => 'Stan',
+      'PhoneticMiddle' => 'The Phony',
+      'PhoneticLast' => 'Karver',
       'Department' => 'IT',
       'Nickname' => 'Stretch',
       'Title' => 'Honorable',
       'Suffix' => 'II',
+      'Birthday' => Date.new(1980, 1, 1),
+      'LunarBirthday' => Date.new(1980, 2, 5),
+      'Dates' => {
+        'values' => [
+          { 'value' => Date.new(2010, 6, 15), 'label' => '_$!<Anniversary>!$_' }
+        ]
+      },
+      'InstantMessage' => {
+        'values' => [
+          { 'value' => { 'address' => 'stan.carver', 'serviceName' => 'Skype' }, 'label' => 'Work' }
+        ]
+      },
       'Note' => 'Met at RubyConf',
       'Email' => {
         'values' => [
@@ -70,8 +87,14 @@ RSpec.describe Abbu::Parsers::PlistParser do
         parser  = described_class.new(dir)
         contact = parser.contacts.first
 
+        # Phonetic names
+        expect(contact.phonetic_first_name).to eq('Stan')
+        expect(contact.phonetic_middle_name).to eq('The Phony')
+        expect(contact.phonetic_last_name).to eq('Karver')
+
         # Flat fields
         expect(contact.first_name).to eq('Stan')
+        expect(contact.middle_name).to eq('The Man')
         expect(contact.last_name).to  eq('Carver')
         expect(contact.company).to    eq('Acme Corp')
         expect(contact.job_title).to  eq('Engineer')
@@ -79,6 +102,9 @@ RSpec.describe Abbu::Parsers::PlistParser do
         expect(contact.nickname).to   eq('Stretch')
         expect(contact.prefix).to     eq('Honorable')
         expect(contact.suffix).to     eq('II')
+        expect(contact.birthday).to eq({ year: 1980, month: 1, day: 1, label: '_$!<Birthday>!$_' })
+        expect(contact.lunar_birthday).to eq({ year: 1980, month: 2, day: 5, label: '_$!<LunarBirthday>!$_' })
+        expect(contact.anniversary).to eq({ year: 2010, month: 6, day: 15, label: '_$!<Anniversary>!$_' })
 
         # Emails & phones (hash-based, same shape as SQLite parser)
         expect(contact.emails).to eq([{ address: 'stan@example.com', label: 'Work' }])
@@ -101,6 +127,8 @@ RSpec.describe Abbu::Parsers::PlistParser do
 
         # Social profiles
         expect(contact.social_profiles).to eq([{ service: 'Twitter', username: '@scarver2' }])
+        expect(contact.instant_messages).to eq([{ address: 'stan.carver', label: 'Work', service: 'Skype' }])
+        expect(contact.verification_code).to eq('V123')
       end
     end
 
@@ -143,6 +171,22 @@ RSpec.describe Abbu::Parsers::PlistParser do
         expect(contact.phones).to eq([])
         expect(contact.addresses).to eq([])
         expect(contact.notes).to eq([])
+      end
+    end
+
+    it 'handles invalid date types in Plist gracefully' do
+      Dir.mktmpdir do |dir|
+        write_plist(dir, 'bad_date.abcdp', {
+                      'First' => 'Bad',
+                      'Birthday' => 'not a date',
+                      'Dates' => { 'values' => [{ 'value' => 'not a date', 'label' => 'Other' }] }
+                    })
+
+        parser  = described_class.new(dir)
+        contact = parser.contacts.first
+
+        expect(contact.birthday).to be_nil
+        expect(contact.dates).to eq([])
       end
     end
   end

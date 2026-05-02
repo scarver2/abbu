@@ -28,7 +28,11 @@ module Abbu
         {
           name: contact.full_name,
           first_name: contact.first_name,
+          middle_name: contact.middle_name,
           last_name: contact.last_name,
+          phonetic_first_name: contact.phonetic_first_name,
+          phonetic_middle_name: contact.phonetic_middle_name,
+          phonetic_last_name: contact.phonetic_last_name,
           nickname: contact.nickname,
           prefix: contact.prefix,
           suffix: contact.suffix,
@@ -42,7 +46,13 @@ module Abbu
           urls: contact.urls,
           notes: contact.notes,
           related_names: contact.related_names,
-          social_profiles: contact.social_profiles
+          social_profiles: contact.social_profiles,
+          birthday: contact.birthday,
+          anniversary: contact.anniversary,
+          dates: contact.dates,
+          instant_messages: contact.instant_messages,
+          verification_code: contact.verification_code,
+          lunar_birthday: contact.lunar_birthday
         }.compact
       end
     end
