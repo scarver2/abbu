@@ -27,7 +27,8 @@ module Abbu
       private
 
       def headers
-        %w[Name Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles]
+        %w[Name First Middle Last Email Phone Company Address Groups URLs Notes RelatedNames SocialProfiles Birthday
+           Anniversary InstantMessages VerificationCode LunarBirthday]
       end
 
       def row(contact)
@@ -36,21 +37,20 @@ module Abbu
 
       def core_fields(contact)
         [
-          contact.full_name,
-          contact.emails.first&.fetch(:address, nil),
-          contact.phones.first&.fetch(:number, nil),
-          contact.company,
-          format_address(contact.addresses.first),
-          contact.groups.join(', ')
+          contact.full_name, contact.first_name, contact.middle_name,
+          contact.last_name, contact.emails.first&.fetch(:address, nil),
+          contact.phones.first&.fetch(:number, nil), contact.company,
+          format_address(contact.addresses.first), contact.groups.join(', ')
         ]
       end
 
-      def extended_fields(contact)
+      def extended_fields(contact) # rubocop:disable Metrics/AbcSize
         [
-          contact.urls.map { |u| u[:url] }.join(', '),
-          contact.notes.join("\n"),
-          format_related_names(contact.related_names),
-          format_social_profiles(contact.social_profiles)
+          contact.urls.map { |u| u[:url] }.join(', '), contact.notes.join("\n"),
+          format_related_names(contact.related_names), format_social_profiles(contact.social_profiles),
+          format_date(contact.birthday), format_date(contact.anniversary),
+          format_instant_messages(contact.instant_messages), contact.verification_code,
+          format_date(contact.lunar_birthday)
         ]
       end
 
@@ -66,6 +66,20 @@ module Abbu
 
       def format_social_profiles(profiles)
         profiles.map { |sp| "#{sp[:username]} on #{sp[:service]}" }.join(', ')
+      end
+
+      def format_instant_messages(ims)
+        ims.map { |im| "#{im[:address]} (#{im[:service]})" }.join(', ')
+      end
+
+      def format_date(date)
+        return nil unless date
+
+        if date[:year]&.positive?
+          format('%<year>04d-%<month>02d-%<day>02d', year: date[:year], month: date[:month], day: date[:day])
+        else
+          format('--%<month>02d-%<day>02d', month: date[:month], day: date[:day])
+        end
       end
     end
   end

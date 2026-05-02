@@ -9,16 +9,19 @@ module Abbu
     class SqliteParser # rubocop:disable Metrics/ClassLength
       # Column-name → attr_accessor mapping for flat fields on ZABCDRECORD
       RECORD_FIELD_MAP = {
-        'ZFIRSTNAME' => :first_name, 'ZLASTNAME' => :last_name,
+        'ZFIRSTNAME' => :first_name, 'ZMIDDLENAME' => :middle_name,
+        'ZLASTNAME' => :last_name,
         'ZNICKNAME' => :nickname, 'ZTITLE' => :prefix,
         'ZSUFFIX' => :suffix, 'ZORGANIZATION' => :company,
         'ZJOBTITLE' => :job_title, 'ZDEPARTMENT' => :department,
         'ZMAIDENNAME' => :maiden_name,
         'ZPHONETICFIRSTNAME' => :phonetic_first_name,
+        'ZPHONETICMIDDLENAME' => :phonetic_middle_name,
         'ZPHONETICLASTNAME' => :phonetic_last_name,
         'ZPHONETICORGANIZATION' => :phonetic_company,
         'ZPRONOUNS' => :pronouns,
-        'ZRINGTONE' => :ringtone, 'ZTEXTTONE' => :texttone
+        'ZRINGTONE' => :ringtone, 'ZTEXTTONE' => :texttone,
+        'ZVERIFICATIONCODE' => :verification_code
       }.freeze
 
       def initialize(db_paths)
@@ -124,6 +127,28 @@ module Abbu
         []
       end
 
+      def dates_for(db, record_id)
+        db.execute(
+          'SELECT ZYEAR, ZMONTH, ZDAY, ZLABEL FROM ZABCDDATECOMPONENTS WHERE ZOWNER = ?',
+          record_id
+        ).map do |row|
+          { year: row['ZYEAR'], month: row['ZMONTH'], day: row['ZDAY'], label: row['ZLABEL'] }
+        end
+      rescue SQLite3::SQLException
+        []
+      end
+
+      def instant_messages_for(db, record_id)
+        db.execute(
+          'SELECT ZADDRESS, ZLABEL, ZSERVICENAME FROM ZABCDMESSAGINGADDRESS WHERE ZOWNER = ?',
+          record_id
+        ).map do |row|
+          { address: row['ZADDRESS'], label: row['ZLABEL'], service: row['ZSERVICENAME'] }
+        end
+      rescue SQLite3::SQLException
+        []
+      end
+
       def build_contact(db, row)
         contact = Contact.new
         assign_flat_fields(contact, row)
@@ -137,15 +162,22 @@ module Abbu
         end
       end
 
-      def assign_relational_fields(contact, db, record_id) # rubocop:disable Metrics/AbcSize
-        contact.emails          = emails_for(db, record_id)
-        contact.phones          = phones_for(db, record_id)
-        contact.addresses       = addresses_for(db, record_id)
-        contact.groups          = groups_for(db, record_id)
-        contact.urls            = urls_for(db, record_id)
-        contact.notes           = notes_for(db, record_id)
-        contact.related_names   = related_names_for(db, record_id)
-        contact.social_profiles = social_profiles_for(db, record_id)
+      def assign_relational_fields(contact, db, record_id) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        contact.emails           = emails_for(db, record_id)
+        contact.phones           = phones_for(db, record_id)
+        contact.addresses        = addresses_for(db, record_id)
+        contact.groups           = groups_for(db, record_id)
+        contact.urls             = urls_for(db, record_id)
+        contact.notes            = notes_for(db, record_id)
+        contact.related_names    = related_names_for(db, record_id)
+        contact.social_profiles  = social_profiles_for(db, record_id)
+        contact.instant_messages = instant_messages_for(db, record_id)
+
+        all_dates = dates_for(db, record_id)
+        contact.dates = all_dates
+        contact.birthday    = all_dates.find { |d| d[:label] == '_$!<Birthday>!$_' }
+        contact.anniversary = all_dates.find { |d| d[:label] == '_$!<Anniversary>!$_' }
+        contact.lunar_birthday = all_dates.find { |d| d[:label] == '_$!<LunarBirthday>!$_' }
       end
     end
   end
