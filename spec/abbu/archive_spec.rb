@@ -45,6 +45,25 @@ RSpec.describe Abbu::Archive do
       end
     end
 
+    it 'parses .abcdp files from a plist-only bundle' do
+      Dir.mktmpdir('plist.abbu') do |dir|
+        require 'plist'
+        records_dir = File.join(dir, 'Records')
+        FileUtils.mkdir_p(records_dir)
+        File.write(
+          File.join(records_dir, 'stan.abcdp'),
+          { 'First' => 'Stan', 'Last' => 'Carver' }.to_plist
+        )
+
+        archive  = described_class.new(dir)
+        contacts = archive.contacts
+
+        expect(contacts.size).to eq(1)
+        expect(contacts.first.first_name).to eq('Stan')
+        expect(contacts.first.last_name).to eq('Carver')
+      end
+    end
+
     it 'delegates to SqliteParser when an .abcddb file exists' do
       Dir.mktmpdir('sample.abbu') do |dir|
         db_path = File.join(dir, 'AddressBook-v22.abcddb')

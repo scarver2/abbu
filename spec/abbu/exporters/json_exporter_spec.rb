@@ -8,7 +8,12 @@ RSpec.describe Abbu::Exporters::JsonExporter do
   let(:contact) do
     c = Abbu::Contact.new
     c.first_name = 'Stan'
+    c.middle_name = 'The Man'
     c.last_name  = 'Carver'
+    c.nickname   = 'Stretch'
+    c.phonetic_first_name = 'Stan'
+    c.phonetic_middle_name = 'The Phony'
+    c.phonetic_last_name = 'Karver'
     c.emails     = [{ address: 'stan@example.com', label: 'Work' }]
     c.phones     = [{ number: '555-1234', label: 'Mobile' }]
     c.company    = 'Acme'
@@ -18,6 +23,11 @@ RSpec.describe Abbu::Exporters::JsonExporter do
     c.notes      = ['Great guy']
     c.related_names   = [{ name: 'John', label: 'brother' }]
     c.social_profiles = [{ service: 'Twitter', username: '@scarver2' }]
+    c.birthday    = { 'year' => 1980, 'month' => 1, 'day' => 1 }
+    c.anniversary = { 'year' => 2010, 'month' => 6, 'day' => 15 }
+    c.lunar_birthday = { 'year' => 1980, 'month' => 2, 'day' => 5 }
+    c.instant_messages = [{ address: 'stan.carver', label: 'Work', service: 'Skype' }]
+    c.verification_code = 'V123'
     c
   end
 
@@ -30,8 +40,12 @@ RSpec.describe Abbu::Exporters::JsonExporter do
         exporter.to_file(path)
         data = JSON.parse(File.read(path)).first
 
-        expect(data['name']).to eq('Stan Carver')
-        expect(data['first_name']).to eq('Stan')
+        expect(data['name']).to eq('Stan The Man "Stretch" Carver')
+        expect(data['last_name']).to eq('Carver')
+        expect(data['phonetic_first_name']).to eq('Stan')
+        expect(data['phonetic_middle_name']).to eq('The Phony')
+        expect(data['phonetic_last_name']).to eq('Karver')
+        expect(data['nickname']).to eq('Stretch')
         expect(data['company']).to eq('Acme')
         expect(data['job_title']).to eq('Engineer')
         expect(data['emails'].first['address']).to eq('stan@example.com')
@@ -41,13 +55,18 @@ RSpec.describe Abbu::Exporters::JsonExporter do
         expect(data['notes']).to eq(['Great guy'])
         expect(data['related_names'].first['name']).to eq('John')
         expect(data['social_profiles'].first['username']).to eq('@scarver2')
+        expect(data['birthday']['year']).to eq(1980)
+        expect(data['anniversary']['month']).to eq(6)
+        expect(data['instant_messages'].first['address']).to eq('stan.carver')
+        expect(data['verification_code']).to eq('V123')
+        expect(data['lunar_birthday']['day']).to eq(5)
       end
     end
   end
 
   describe '#to_stdout' do
     it 'prints JSON to stdout' do
-      expect { exporter.to_stdout }.to output(/Stan Carver/).to_stdout
+      expect { exporter.to_stdout }.to output(/Stan The Man \\"Stretch\\" Carver/).to_stdout
     end
   end
 end

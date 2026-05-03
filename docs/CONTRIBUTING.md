@@ -39,7 +39,7 @@ mise exec -- bundle exec rubocop -a   # autocorrect
 - Commit style: [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`)
 - All specs must pass and coverage must remain at 100%
 - RuboCop must pass with no offenses
-- Add an entry to `CHANGELOG.md` under `[Unreleased]`
+- Add an entry to `docs/CHANGELOG.md` under `[Unreleased]`
 
 ## Reporting Issues
 

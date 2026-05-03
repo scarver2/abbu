@@ -8,8 +8,10 @@ Read and process Apple Contacts `.abbu` archives in Ruby.
 
 - Parse ABBU (Apple Contacts export) bundles
 - SQLite-backed contact extraction (modern macOS)
-- Legacy plist format detection (stub, v0.2 roadmap)
-- Export to CSV, JSON, vCard
+- Legacy plist `.abcdp` parsing (older macOS)
+- Full Apple Contacts schema: names, nicknames, prefix/suffix, job title, department, phonetics, pronouns, and more
+- Rich relational data: addresses, URLs, notes, related names, social profiles
+- Export to CSV, JSON, vCard 3.0
 - CLI + Ruby API
 - Duplicate detection
 
@@ -35,9 +37,10 @@ require "abbu"
 archive = Abbu.open("Contacts.abbu")
 contacts = archive.contacts
 
-contacts.first.full_name   # => "Stan Carver"
-contacts.first.emails      # => ["stan@example.com"]
-contacts.first.phones      # => ["555-1234"]
+contacts.first.full_name   # => "Honorable Stan \"Stretch\" Carver II"
+contacts.first.emails      # => [{ address: "stan@example.com", label: "Work" }]
+contacts.first.phones      # => [{ number: "555-1234", label: "Mobile" }]
+contacts.first.job_title   # => "Engineer"
 ```
 
 ### Export
@@ -102,12 +105,7 @@ SQLite table schema, and format history.
 
 ## Roadmap
 
-| Version | Features                                    |
-|---------|---------------------------------------------|
-| v0.1.0  | SQLite parsing, CSV/JSON/vCard export, CLI  |
-| v0.2.0  | Plist parser, image extraction              |
-| v0.3.0  | Fuzzy dedupe (Levenshtein), merge engine    |
-| v1.0.0  | Sync adapters (Printavo, HubSpot, CRM)      |
+See [`docs/TODO.md`](docs/TODO.md) for the full release schedule and feature checklist.
 
 ## Development
 
@@ -120,7 +118,7 @@ mise exec -- bundle exec rubocop  # lint
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md).
 
 ## License
 

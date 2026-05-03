@@ -16,13 +16,14 @@ RSpec.describe Abbu::Contact do
       expect(contact.full_name).to eq('Stan Carver')
     end
 
-    it 'includes prefix, nickname, and suffix if present' do
-      contact.first_name = 'Stan'
-      contact.last_name  = 'Carver'
+    it 'includes prefix, middle name, nickname, and suffix if present' do
       contact.prefix     = 'Honorable'
+      contact.first_name = 'Stan'
+      contact.middle_name = 'The Man'
       contact.nickname   = 'Stretch'
+      contact.last_name  = 'Carver'
       contact.suffix     = 'II'
-      expect(contact.full_name).to eq('Honorable Stan "Stretch" Carver II')
+      expect(contact.full_name).to eq('Honorable Stan The Man "Stretch" Carver II')
     end
 
     it 'handles missing last name' do

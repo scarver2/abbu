@@ -6,9 +6,15 @@ require 'tmpdir'
 RSpec.describe Abbu::Exporters::VcardExporter do
   let(:contact) do
     c = Abbu::Contact.new
+    c.prefix     = 'Honorable'
     c.first_name = 'Stan'
-    c.last_name  = 'Carver'
+    c.middle_name = 'The Man'
     c.nickname   = 'Stretch'
+    c.last_name  = 'Carver'
+    c.phonetic_first_name = 'Stan'
+    c.phonetic_middle_name = 'The Phony'
+    c.phonetic_last_name = 'Karver'
+    c.suffix     = 'II'
     c.emails     = [{ address: 'stan@example.com', label: 'Work' }]
     c.phones     = [{ number: '555-1234', label: 'Mobile' }]
     c.company    = 'Acme'
@@ -17,6 +23,11 @@ RSpec.describe Abbu::Exporters::VcardExporter do
     c.urls       = [{ url: 'https://stancarver.com', label: 'homepage' }]
     c.notes      = ['Great guy']
     c.social_profiles = [{ service: 'Twitter', username: '@scarver2' }]
+    c.birthday    = { year: 1980, month: 1, day: 1 }
+    c.anniversary = { year: 2010, month: 6, day: 15 }
+    c.lunar_birthday = { year: 1980, month: 2, day: 5 }
+    c.instant_messages = [{ address: 'stan.carver', label: 'Work', service: 'Skype' }]
+    c.verification_code = 'V123'
     c
   end
 
@@ -30,17 +41,26 @@ RSpec.describe Abbu::Exporters::VcardExporter do
         content = File.read(path)
 
         expect(content).to include('BEGIN:VCARD')
-        expect(content).to include('FN:Stan "Stretch" Carver')
-        expect(content).to include('N:Carver;Stan;;;')
+        expect(content).to include('FN:Honorable Stan The Man "Stretch" Carver II')
+        expect(content).to include('N:Carver;Stan;The Man;Honorable;II')
         expect(content).to include('NICKNAME:Stretch')
         expect(content).to include('ORG:Acme')
         expect(content).to include('TITLE:Engineer')
+        expect(content).to include('X-PHONETIC-FIRST-NAME:Stan')
+        expect(content).to include('X-PHONETIC-MIDDLE-NAME:The Phony')
+        expect(content).to include('X-PHONETIC-LAST-NAME:Karver')
         expect(content).to include('EMAIL;TYPE=Work:stan@example.com')
         expect(content).to include('TEL;TYPE=Mobile:555-1234')
         expect(content).to include('ADR;TYPE=Home:;;123 Main;Dallas;TX;75001;USA')
         expect(content).to include('URL:https://stancarver.com')
         expect(content).to include('NOTE:Great guy')
         expect(content).to include('X-SOCIALPROFILE;TYPE=Twitter:@scarver2')
+        expect(content).to include('BDAY:1980-01-01')
+        expect(content).to include('X-LUNAR-BDAY:1980-02-05')
+        expect(content).to include('X-ABDATE;type=pref:2010-06-15')
+        expect(content).to include('X-ABLABEL:_$!<Anniversary>!$_')
+        expect(content).to include('IMPP;TYPE=Work:skype:stan.carver')
+        expect(content).to include('X-VERIFICATION-CODE:V123')
         expect(content).to include('END:VCARD')
       end
     end
@@ -49,6 +69,16 @@ RSpec.describe Abbu::Exporters::VcardExporter do
   describe '#to_stdout' do
     it 'prints vCard to stdout' do
       expect { exporter.to_stdout }.to output(/BEGIN:VCARD/).to_stdout
+    end
+  end
+
+  context 'when date has no year' do
+    it 'formats with double dash' do
+      c = Abbu::Contact.new
+      c.first_name = 'NoYear'
+      c.birthday = { year: -1, month: 12, day: 25 }
+      exp = described_class.new([c])
+      expect { exp.to_stdout }.to output(/BDAY:--12-25/).to_stdout
     end
   end
 

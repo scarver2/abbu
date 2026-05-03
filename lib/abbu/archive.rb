@@ -33,15 +33,15 @@ module Abbu
       @db_paths ||= @path.glob('**/*.abcddb')
     end
 
-    def records_path
-      @records_path ||= @path.join('Records')
+    def plist_paths
+      @plist_paths ||= @path.glob('**/*.abcdp').sort
     end
 
     def parser
       if sqlite?
         Parsers::SqliteParser.new(db_paths)
       else
-        Parsers::PlistParser.new(records_path)
+        Parsers::PlistParser.new(plist_paths)
       end
     end
   end
