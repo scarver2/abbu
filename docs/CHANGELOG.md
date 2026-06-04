@@ -11,6 +11,40 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `abbu:export` Rake task wrote hash literals (e.g. `{:address=>"…", :label=>"…"}`) into the `Email` and `Phone` CSV columns. Now correctly extracts the first address and number from each contact's multi-value field.
+
+## [0.2.0] - 2026-05-03
+
+### Added
+
+- `Parsers::PlistParser` — full implementation of legacy `.abcdp` plist contact parsing, replacing the previous stub
+- `PlistParser::FIELD_MAP` constant for flat-field mapping
+- Multi-value field extraction for emails, phones, addresses, URLs, notes, related names, and social profiles
+- `Archive` recursively scans `**/*.abcdp` across the entire bundle tree
+- `plist` gem (~> 3.7) runtime dependency
+- Plist fixture files (`spec/fixtures/PlistContacts.abbu/`) for integration testing
+- `middle_name` attribute on `Contact`; `ZMIDDLENAME` / `Middle` plist key
+- `dates` attribute on `Contact` (array of `{ year:, month:, day:, label: }` hashes)
+- `birthday`, `anniversary`, and `lunar_birthday` accessor methods derived from the dates list
+- `instant_messages` attribute (AIM, Jabber, Skype, etc.); `ZABCDMESSAGINGADDRESS` / `InstantMessage` key
+- `verification_code` attribute on `Contact`; `ZVERIFICATIONCODE` column / `VerificationCode` plist key
+- `phonetic_middle_name` attribute; `ZPHONETICMIDDLENAME` column / `PhoneticMiddle` plist key
+- `ZABCDDATECOMPONENTS` parsing (year/month/day split columns)
+- `BDAY`, `X-LUNAR-BDAY`, `X-ABDATE`, `X-ABLABEL` vCard fields
+- `IMPP` vCard field for instant messaging
+- Birthday, anniversary, lunar birthday, instant messages, and verification code in CSV and JSON exports
+- Plist fixture for testing all the above (`spec/fixtures/PlistContacts.abbu/`)
+
+### Changed
+
+- `Contact#full_name` now includes middle name (`Honorable Stan The Man "Stretch" Carver II`)
+- vCard `N` field includes middle name component
+- `SqliteParser::RECORD_FIELD_MAP` extended with the new column → attr mappings
+- `JsonExporter#contact_hash` includes all new fields; blank fields are dropped via `.compact`
+- `CsvExporter` extended-field section now exports lunar birthday and verification code
+
 ## [0.1.2] - 2026-04-26
 
 ### Added
