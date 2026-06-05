@@ -35,6 +35,7 @@ module Abbu
         append_instant_messages(lines, contact)
         append_verification_code(lines, contact)
         append_notes(lines, contact)
+        append_photo(lines, contact)
 
         lines << 'END:VCARD'
         lines.join("\n")
@@ -73,6 +74,12 @@ module Abbu
 
       def append_verification_code(lines, contact)
         lines << "X-VERIFICATION-CODE:#{contact.verification_code}" if contact.verification_code
+      end
+
+      def append_photo(lines, contact)
+        return unless contact.image_path
+
+        lines << "PHOTO;VALUE=URI:file://#{contact.image_path}"
       end
 
       def append_notes(lines, contact)
