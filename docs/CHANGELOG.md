@@ -27,6 +27,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - PlistParser does not extract images — legacy `.abcdp` contacts typically embed image data inline, which is a separate extraction path
 - vCard `PHOTO` references the absolute bundle path; base64 embedding and the `--extract-images` CLI flag are tracked for follow-up
 
+### Fixed
+
+- vCard `PHOTO` file URIs now percent-encode spaces, reserved characters, and non-ASCII bytes in image paths
+
 ## [0.2.4] - Unreleased
 
 ### Fixed

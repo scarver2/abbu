@@ -111,4 +111,13 @@ RSpec.describe Abbu::Exporters::VcardExporter do
       expect { exp.to_stdout }.not_to output(/PHOTO:/).to_stdout
     end
   end
+
+  context 'when image_path contains URI-reserved characters' do
+    it 'percent-encodes the photo file URI' do
+      contact.image_path = Pathname.new('/tmp/My Contacts/stan#100%-résumé.jpg')
+
+      expect { exporter.to_stdout }
+        .to output(%r{PHOTO;VALUE=URI:file:///tmp/My%20Contacts/stan%23100%25-r%C3%A9sum%C3%A9\.jpg}).to_stdout
+    end
+  end
 end
