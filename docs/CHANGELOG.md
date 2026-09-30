@@ -15,6 +15,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 - Normalized Apple standard labels with the original source value preserved as
   `raw_label` on labeled contact values
+- Chainable `Abbu::Query` and `Archive#where` APIs for contact filtering
+- Exact normalized email and phone lookup that returns all matches across sources
+- Case-insensitive partial name and email search through Ruby and tab-separated CLI output
+- Stable `--json` search output using the regular contact JSON schema
 - Contact creation and modification timestamps from optional SQLite `ZCREATIONDATE` and `ZMODIFICATIONDATE` columns
 - Provenance metadata identifying each contact's source database or plist and its location within the ABBU bundle
 - Creation, modification, and source metadata in JSON exports
