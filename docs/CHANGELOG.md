@@ -18,6 +18,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
   schema elements, and owner/contact-style relationship candidates
 - Deterministic schema-variation coverage for missing optional tables, unknown
   contact-linked tables, and column drift
+- Normalized Apple standard labels with the original source value preserved as
+  `raw_label` on labeled contact values
+- Chainable `Abbu::Query` and `Archive#where` APIs for contact filtering
+- Exact normalized email and phone lookup that returns all matches across sources
+- Case-insensitive partial name and email search through Ruby and tab-separated CLI output
+- Stable `--json` search output using the regular contact JSON schema
 - Contact creation and modification timestamps from optional SQLite `ZCREATIONDATE` and `ZMODIFICATIONDATE` columns
 - Provenance metadata identifying each contact's source database or plist and its location within the ABBU bundle
 - Creation, modification, and source metadata in JSON exports
@@ -30,6 +36,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 - SQLite parsing now tolerates absent established email, phone, and postal-address
   tables and returns empty collections while retaining the variation in schema diagnostics
+- vCard anniversary export now prefers the original `raw_label` so Apple and
+  custom source representations survive parse-and-export round trips
 - Minimum supported Ruby and RuboCop target are now 3.3; CI covers Ruby 3.3,
   3.4, and 4.0, with Ruby 3.3 as the designated lint/tooling job
 - Agent guidance is consolidated in `AGENTS.md`; the redundant `CLAUDE.md` has
