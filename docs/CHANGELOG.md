@@ -35,7 +35,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - SQLite parsing now tolerates absent established email, phone, and postal-address
-  tables and returns empty collections while retaining the variation in schema diagnostics
+  tables and returns empty collections while retaining the variation in schema diagnostics;
+  unexpected column drift and other SQL errors on present tables continue to surface
 - vCard anniversary export now prefers the original `raw_label` so Apple and
   custom source representations survive parse-and-export round trips
 - Minimum supported Ruby and RuboCop target are now 3.3; CI covers Ruby 3.3,

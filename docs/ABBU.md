@@ -139,10 +139,12 @@ These reports are research evidence, not parser mappings. In particular, a
 Contacts semantics. Unknown tables and columns must be reproduced in a sanitized fixture
 or supported by documentation before ABBU uses them to populate contacts.
 
-Missing recognized tables and columns are also observations rather than failures. The
-parser tolerates absent established relational tables by returning empty collections,
-while the schema report preserves the absence for compatibility research. The core
-`ZABCDRECORD` table remains required for contact parsing.
+Missing recognized tables and columns remain visible as diagnostic observations. The
+parser tolerates absent established email, phone, and postal-address tables by returning
+empty collections, while the schema report preserves the absence for compatibility
+research. If one of those tables exists but lacks an expected column, parsing raises the
+SQLite schema error instead of silently treating the contact as having no corresponding
+data. The core `ZABCDRECORD` table remains required for contact parsing.
 
 ### Labeled values
 
