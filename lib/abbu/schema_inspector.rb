@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 require 'pathname'
-require 'set'
+# Explicit ownership keeps SchemaInspector independent of Ruby's Set autoload behavior.
+require 'set' # rubocop:disable Lint/RedundantRequireStatement
 require 'sqlite3'
 require_relative 'utils/source_descriptor'
 
