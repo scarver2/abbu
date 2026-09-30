@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'pathname'
+require 'set'
 require 'sqlite3'
 require_relative 'utils/source_descriptor'
 
