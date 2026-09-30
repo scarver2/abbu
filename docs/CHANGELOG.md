@@ -29,6 +29,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- CI now runs the Ruby matrix once for pull requests and on pushes to canonical `main`, avoiding duplicate feature-branch push and pull-request runs
 - vCard anniversary export now prefers the original `raw_label` so Apple and
   custom source representations survive parse-and-export round trips
 - Minimum supported Ruby and RuboCop target are now 3.3; CI covers Ruby 3.3,
